@@ -36,6 +36,7 @@ int eliminate(Matrix *mat, Matrix *b){
             for (j = k; j < n; j++) {
                 mat->data[i][j] -= factor * mat->data[k][j];
             }
+
             b->data[i][0] -= factor * b->data[k][0];
         }
     }
