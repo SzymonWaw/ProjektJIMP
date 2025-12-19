@@ -5,23 +5,33 @@
  * Zwraca 2 - błąd nieprawidłowych rozmiarów macierzy
  */
 int  backsubst(Matrix *x, Matrix *mat, Matrix *b) {
-	int i, j;
-	int n = mat->r;
+    int n = mat->r;
+    int i, j;
 
-	if (mat->r != mat->c || mat->r != b->r || mat->r != x->r || x->c != 1 || b->c != 1){
-		return 2;
-	}
-	for (i = n - 1; i >= 0; i--){
-		double sum = 0.0;
-		for (j = i + 1; j < n; j++){
-			sum += mat->data[i][j] * x->data[j][0];
-		}
-		if (mat->data[i][j] == 0){
-			return 1;
-		}
-		x->data[i][0] = (b->data[i][0] - sum) / mat->data[i][j];
-	}
-				return 0;
+    // Sprawdzenie poprawności wymiarów
+    if (mat->r != mat->c || mat->r != b->r || x->r != b->r) {
+        return 2;
+    }
+
+    // Pętla idąca od ostatniego wiersza do pierwszego (wstecz)
+    for (i = n - 1; i >= 0; i--) {
+        double s = 0;
+
+        // Sumujemy już obliczone wartości x (te "pod" aktualnym wierszem)
+        for (j = i + 1; j < n; j++) {
+            s += mat->data[i][j] * x->data[j][0];
+        }
+
+        // Zabezpieczenie przed dzieleniem przez zero na przekątnej
+        if (mat->data[i][i] == 0) {
+            return 1;
+        }
+
+        // Wyliczamy xi: (bi - suma) / Aii
+        x->data[i][0] = (b->data[i][0] - s) / mat->data[i][i];
+    }
+
+    return 0;
 }
 
 
